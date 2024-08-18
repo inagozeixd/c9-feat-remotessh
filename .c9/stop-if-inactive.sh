@@ -4,7 +4,7 @@
 # Modifications made by inagozeixd, 2024/08/18
 # Description of modifications:
 # - Amazon Linux 2023 のみサポート
-# - Cloud9 IDEリスペクト。元プロジェクトの階層構造（/home/ec2-user/.c9/）はそのまま継承
+# - Cloud9 IDEリスペクト 元プロジェクトの階層構造（/home/ec2-user/.c9/）はそのまま継承
 # - VSCode Extensions の Remote-SSH から利用想定のため、vfs-worker周りは削除
 
 #!/bin/bash
@@ -33,11 +33,13 @@ is_shutting_down_al2023() {
     fi
 }
 is_vscode_connected() {
+    # Remote-SSH接続時に生じるプロセスが存在するかチェック（あればRemote-SSHでEC2に接続中）
     pgrep -u ec2-user -f .vscode-server/cli/ -a | grep -F -- '--type=fileWatcher' | grep -v -F 'shellIntegration-bash.sh' >/dev/null || \
     pgrep -u ec2-user -f /home/ec2-user/.vscode-server/code- -a >/dev/null
 }
 
 if is_shutting_down; then
+    # FIXME: /home/ec2-user/.c9/autoshutdown-timestamp はシャットダウン時刻追跡用に残してるが、現状bash中で読み取って使うような処理はない。要る？
     if [[ ! $SHUTDOWN_TIMEOUT =~ ^[0-9]+$ ]] || is_vscode_connected; then
         sudo shutdown -c
         echo > "/home/ec2-user/.c9/autoshutdown-timestamp"
