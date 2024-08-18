@@ -33,7 +33,7 @@ is_shutting_down_al2023() {
     fi
 }
 is_vscode_connected() {
-    pgrep -u ec2-user -f .vscode-server/cli/ -a | grep -v -F 'shellIntegration-bash.sh' >/dev/null || \
+    pgrep -u ec2-user -f .vscode-server/cli/ -a | grep -F -- '--type=fileWatcher' | grep -v -F 'shellIntegration-bash.sh' >/dev/null || \
     pgrep -u ec2-user -f /home/ec2-user/.vscode-server/code- -a >/dev/null
 }
 
